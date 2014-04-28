@@ -150,10 +150,15 @@ public class SystemPropertiesExtensionContext extends FREContext
             	dictionary.setProperty("os",FREObject.newObject(System.getProperty("os.name")) );
             	dictionary.setProperty("language",FREObject.newObject(System.getProperty("user.language") ));
             	dictionary.setProperty("arch",FREObject.newObject(System.getProperty("os.arch")) );
-            	dictionary.setProperty("version",FREObject.newObject(System.getProperty("os.version") ));
+            	//dictionary.setProperty("version",FREObject.newObject(System.getProperty("os.version") )); //removed by yuri
             	
             	dictionary.setProperty("model",FREObject.newObject(android.os.Build.MODEL));
-
+            	
+            	dictionary.setProperty("version", FREObject.newObject(android.os.Build.VERSION.RELEASE)); //yuri
+            	dictionary.setProperty("manufacturer", FREObject.newObject(android.os.Build.MANUFACTURER)); //yuri
+            	dictionary.setProperty("brand", FREObject.newObject(android.os.Build.BRAND)); //yuri
+            	dictionary.setProperty("hardware", FREObject.newObject(android.os.Build.HARDWARE)); //yuri
+            	
             	if(android.os.Build.VERSION.SDK_INT>9)
             		dictionary.setProperty("serial",FREObject.newObject(android.os.Build.SERIAL));
             	
@@ -169,19 +174,19 @@ public class SystemPropertiesExtensionContext extends FREContext
 		        	
 		        	
             	}catch(Exception e){
-            		context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+            		context.dispatchStatusEventAsync(ERROR_EVENT, "pacakgeName, sourceDir, AppUid Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}	
 		        try{
 		        	dictionary.setProperty("phoneNumber", FREObject.newObject(getMyPhoneNumber(activity)));
 		        }catch(Exception e){
-		        	context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+		        	context.dispatchStatusEventAsync(ERROR_EVENT, "phoneNumber Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}	
 		        try{
 		        	dictionary.setProperty("hasHardwareMenuButton", FREObject.newObject(hasHardwareMenuButton(activity)));
 		        }catch(Exception e){
-		        	context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+		        	context.dispatchStatusEventAsync(ERROR_EVENT, "hasHardwareMenuButton Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}	
 		        try{
@@ -189,7 +194,9 @@ public class SystemPropertiesExtensionContext extends FREContext
 		
 		        	String imsi = tm.getSubscriberId();
 		        	dictionary.setProperty("IMSI",FREObject.newObject(imsi));
-		        	 
+		        	
+		        	String carrier = tm.getNetworkOperatorName(); //yuri
+		        	dictionary.setProperty("carrier",FREObject.newObject(carrier)); //yuri
 		        	 
 		    	    final String tmDevice, tmSerial, androidId;
 		    	    tmDevice = "" + tm.getDeviceId();
@@ -201,7 +208,7 @@ public class SystemPropertiesExtensionContext extends FREContext
 		    	    dictionary.setProperty("UID",FREObject.newObject(deviceUuid.toString()));
 
 		        }catch(Exception e){
-		        	context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+		        	context.dispatchStatusEventAsync(ERROR_EVENT, "UID pr IMSI Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}	
 		        /*try{
@@ -213,7 +220,7 @@ public class SystemPropertiesExtensionContext extends FREContext
 		        	String MACAdress = getWifiMacAddress(activity.getBaseContext()).toString();
 		        	dictionary.setProperty("MACAddress",FREObject.newObject(MACAdress));
 		        }catch(Exception e){
-		        	context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+		        	context.dispatchStatusEventAsync(ERROR_EVENT, "MACAddress Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}	
 		        try{
@@ -221,7 +228,7 @@ public class SystemPropertiesExtensionContext extends FREContext
 		        	dictionary.setProperty("IMEI",FREObject.newObject(IMEI));
             	}catch(Exception e){
             		
-            		context.dispatchStatusEventAsync(ERROR_EVENT,e.toString());
+            		context.dispatchStatusEventAsync(ERROR_EVENT, "IMEI Error:" + e.toString());
             		//dictionary.setProperty("error",FREObject.newObject(e.toString()));
             	}
             }catch (Exception e){

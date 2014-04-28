@@ -1,6 +1,11 @@
 #import "FlashRuntimeExtensions.h"
 #import "UIDevice+MACAddress.h"
 
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <CoreTelephony/CTCarrier.h>
+#import <UIKit/UIDevice.h>
+#import <AdSupport/ASIdentifierManager.h>
+
 #pragma mark - Helper stuff
 
 
@@ -21,7 +26,25 @@ void setPropToDic(FREObject *dic,const uint8_t *param,NSString *value)
         FRESetObjectProperty(dic, param, valueObj, NULL);
 }
 
+NSString* GetDeviceCarrier ()
+{
+    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+    CTCarrier *carrier = [netinfo subscriberCellularProvider];
+    NSString* deviceCarrier = [carrier carrierName];
+    
+    NSLog(@"iOS: GetDeviceCarrier = %@", deviceCarrier);
+    
+    return deviceCarrier;
+}
 
+NSString* GetIdForVendor ()
+{
+    NSString* vendorID = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    
+    NSLog(@"iOS: GetIdForVendor = %@", vendorID);
+    
+    return vendorID;
+}
 
 
 #pragma mark - ANE main functions
@@ -34,8 +57,6 @@ DEFINE_ANE_FUNCTION(getSystemProperty){
         return nil;
     }
     @try {
-        
-        
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString *num = nil;
 
@@ -47,6 +68,9 @@ DEFINE_ANE_FUNCTION(getSystemProperty){
         #if !TARGET_IPHONE_SIMULATOR
             setPropToDic(dic,(const uint8_t*)"UDID"             ,[device uniqueDeviceIdentifier]);
             setPropToDic(dic,(const uint8_t*)"MACAddress"       ,[device macAddress]);
+        
+            setPropToDic(dic,(const uint8_t*)"vendorId"         ,GetIdForVendor());
+            setPropToDic(dic,(const uint8_t*)"carrier"          ,GetDeviceCarrier());
         #endif
         setPropToDic(dic,(const uint8_t*)"phoneNumber"      ,num);
         setPropToDic(dic,(const uint8_t*)"language"         ,[[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0]);
